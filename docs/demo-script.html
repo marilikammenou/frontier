@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontier — Demo Script</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --paper:   #f6f3ee;
+  --paper2:  #ede9e1;
+  --ink:     #1a1714;
+  --ink2:    #2e2a25;
+  --ink3:    rgba(26,23,20,0.45);
+  --gold:    #b8955a;
+  --gold-bg: rgba(184,149,90,0.08);
+  --gold-bd: rgba(184,149,90,0.25);
+  --red:     #c0392b;
+  --green:   #1a6b3a;
+  --blue:    #1a4a7a;
+  --rule:    rgba(26,23,20,0.1);
+  --sans:    'Libre Franklin', sans-serif;
+  --serif:   'Playfair Display', serif;
+  --mono:    'DM Mono', monospace;
+}
+
+html { background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+/* ── LAYOUT ── */
+.page { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+/* ── MASTHEAD ── */
+.masthead {
+  padding: 32px 0 24px;
+  border-bottom: 3px double var(--rule);
+  margin-bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.masthead-left {}
+.masthead-kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.masthead-title {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+.masthead-title em { font-style: italic; color: var(--gold); }
+.masthead-right {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  line-height: 1.8;
+}
+
+/* ── TIMING BAR ── */
+.timing-bar {
+  background: var(--ink);
+  color: rgba(246,243,238,0.9);
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.timing-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.timing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.timing-label { color: rgba(246,243,238,0.45); }
+.timing-val { color: rgba(246,243,238,0.9); font-weight: 500; }
+.timing-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.12); }
+
+/* ── SECTION ── */
+.section { margin-bottom: 44px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.section-num {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 32px;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+.section-title-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+.section-rule { flex: 1; height: 1px; background: var(--rule); }
+
+/* ── BEATS ── */
+.beats { display: flex; flex-direction: column; gap: 0; }
+.beat {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.beat:first-child { border-top: 1px solid var(--rule); }
+.beat-left {
+  padding: 16px 20px 16px 0;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.beat-time {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.beat-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.beat-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  color: var(--ink3);
+  margin-top: 4px;
+  width: fit-content;
+}
+.beat-tag.live { border-color: var(--gold-bd); color: var(--gold); background: var(--gold-bg); }
+.beat-tag.say  { border-color: rgba(26,74,122,0.25); color: var(--blue); background: rgba(26,74,122,0.06); }
+.beat-tag.note { border-color: rgba(26,107,58,0.25); color: var(--green); background: rgba(26,107,58,0.06); }
+
+.beat-right { padding: 16px 0 16px 24px; }
+
+/* Script / say */
+.say-block {
+  background: rgba(26,74,122,0.04);
+  border-left: 3px solid rgba(26,74,122,0.3);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 0 4px 4px 0;
+}
+.say-label {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(26,74,122,0.6);
+  margin-bottom: 6px;
+}
+.say-text {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.75;
+  font-style: italic;
+}
+.say-text strong { font-style: normal; font-weight: 600; color: var(--ink); }
+
+/* Pointer bullets */
+.pointers { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+.pointer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.pointer-bullet {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.pointer-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.65;
+}
+.pointer-text strong { font-weight: 600; color: var(--ink); }
+.pointer-text code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--paper2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--ink2);
+  border: 1px solid var(--rule);
+}
+
+/* Query box */
+.query-box {
+  margin: 10px 0;
+  padding: 11px 16px;
+  background: var(--ink);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: rgba(246,243,238,0.85);
+  line-height: 1.6;
+  border-left: 3px solid var(--gold);
+}
+.query-box-label {
+  font-size: 8.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+/* Warning */
+.warning {
+  display: flex;
+  gap: 10px;
+  background: rgba(192,57,43,0.05);
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 5px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+.warning-icon { font-size: 13px; flex-shrink: 0; }
+.warning-text { font-size: 12.5px; font-weight: 300; color: var(--red); line-height: 1.6; }
+.warning-text strong { font-weight: 600; }
+
+/* Tip */
+.tip {
+  display: flex;
+  gap: 10px;
+  background: rgba(26,107,58,0.05);
+  border: 1px solid rgba(26,107,58,0.2);
+  border-radius: 5px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+.tip-icon { font-size: 13px; flex-shrink: 0; }
+.tip-text { font-size: 12.5px; font-weight: 300; color: var(--green); line-height: 1.6; }
+.tip-text strong { font-weight: 600; }
+
+/* Transition card */
+.transition {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-bd);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 16px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.transition-arrow { font-size: 16px; color: var(--gold); flex-shrink: 0; }
+.transition-text { font-size: 13px; font-weight: 300; color: var(--ink2); line-height: 1.6; }
+.transition-text strong { font-weight: 600; color: var(--ink); }
+
+/* Close section */
+.close-section {
+  background: var(--ink);
+  color: rgba(246,243,238,0.85);
+  padding: 32px 36px;
+  border-radius: 8px;
+  margin-top: 48px;
+}
+.close-section h2 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 16px;
+  color: var(--paper);
+}
+.close-points { display: flex; flex-direction: column; gap: 10px; }
+.close-point {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.close-point:last-child { border-bottom: none; }
+.close-point-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.close-point-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(246,243,238,0.7);
+  line-height: 1.65;
+}
+.close-point-text strong { color: rgba(246,243,238,0.95); font-weight: 500; }
+
+/* Footer */
+.footer {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 3px double var(--rule);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+@media print {
+  body { background: white; }
+  .page { max-width: 100%; padding: 20px 30px; }
+  .beat { break-inside: avoid; }
+  .section { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-left">
+      <div class="masthead-kicker">Frontier Intelligence · Demo Script</div>
+      <div class="masthead-title">Presenting <em>Frontier</em></div>
+    </div>
+    <div class="masthead-right">
+      René Bossa &amp; Marili Kammenou<br>
+      AskMarketIQ · v2.0<br>
+      Confidential
+    </div>
+  </div>
+
+  <!-- TIMING BAR -->
+  <div class="timing-bar">
+    <div class="timing-item"><div class="timing-dot"></div><span class="timing-label">Total</span>&nbsp;<span class="timing-val">12–15 min</span></div>
+    <div class="timing-sep"></div>
+    <div class="timing-item"><div class="timing-dot"></div><span class="timing-label">Intro</span>&nbsp;<span class="timing-val">2 min</span></div>
+    <div class="timing-sep"></div>
+    <div class="timing-item"><div class="timing-dot"></div><span class="timing-label">Live demo</span>&nbsp;<span class="timing-val">7 min</span></div>
+    <div class="timing-sep"></div>
+    <div class="timing-item"><div class="timing-dot"></div><span class="timing-label">Close</span>&nbsp;<span class="timing-val">3 min</span></div>
+    <div class="timing-sep"></div>
+    <div class="timing-item"><div class="timing-dot"></div><span class="timing-label">Q&amp;A</span>&nbsp;<span class="timing-val">3 min</span></div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SECTION 1 — OPENING
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">The Opening</div>
+        <div class="section-title-meta">HOME PAGE · ~2 MIN · Don't touch the app yet</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="beats">
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">0:00 – 0:30</div>
+          <div class="beat-label">Set the scene</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"Most market intelligence tools tell you what <strong>has happened</strong>. They give you yesterday's data, last quarter's report, last year's trends. <strong>Frontier is built for the analyst who needs to know what's coming next.</strong>"</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Pause here. Let it land. Don't rush to the screen.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">The home page is on screen — let them read the persona panel on the left while you talk.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">0:30 – 1:30</div>
+          <div class="beat-label">Introduce the persona</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"The person we built this for is a <strong>senior analyst or strategy lead</strong> — sitting at a bank, an investment firm, a consulting practice. They're time-poor, they're sitting on fragmented information across a dozen different sources, and their leadership wants <strong>forward-looking insight, not historical summaries</strong>."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Point to the <strong>Pain Points</strong> column on the left panel — fragmented sources, too much noise, tools that look backwards.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Point to the <strong>Goals</strong> column — identify opportunities before competitors, support leadership with direction not just data.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">1:30 – 2:00</div>
+          <div class="beat-label">Enter Frontier</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"Let me show you what that looks like in practice."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Click "Start Analysis"</strong> — the home page fades out, the Frontier app appears.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Point out the sidebar briefly — the status indicator, the recents list. Keep it moving.</div></div>
+          </div>
+          <div class="transition">
+            <div class="transition-arrow">↓</div>
+            <div class="transition-text"><strong>Move directly into the first query.</strong> Don't explain the UI — let the demo explain it.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SECTION 2 — DEMO QUERY 1 (Pipeline)
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">Live Demo — Full Pipeline Query</div>
+        <div class="section-title-meta">THE CORE DEMO · ~4 MIN · This is the money shot</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="beats">
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">2:00 – 2:20</div>
+          <div class="beat-label">Type the query</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"Let's say our analyst has had <strong>three inbounds this month on Nigerian fintech</strong>. Before she puts a team on it, she wants a fast first read. So she asks Frontier."</div>
+          </div>
+          <div class="query-box">
+            <div class="query-box-label">Type this query exactly</div>
+            "What is the opportunity in Nigerian B2B fintech for a growth equity investor with a 5-year horizon?"
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Type slowly and deliberately — let them read it.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Hit Enter. <strong>Don't click away.</strong> Watch the pipeline steps tick off together.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">2:20 – 3:30</div>
+          <div class="beat-label">Talk through the pipeline</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say (while it runs)</div>
+            <div class="say-text">"What you're watching is a <strong>multi-node AI research pipeline</strong> running in parallel. Each step is pulling live data — macro conditions, political risk, sector dynamics, exit landscape, FX exposure, market timing — all simultaneously. This would take a junior analyst <strong>two days</strong> to compile manually."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Point to the step names as they tick off — they're real: <em>Pulling macroeconomic data… Scanning political risk… Analysing sector opportunity…</em></div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">This runs in about <strong>20–25 seconds</strong>. Keep talking — don't let silence build.</div></div>
+          </div>
+          <div class="tip">
+            <div class="tip-icon">💡</div>
+            <div class="tip-text"><strong>If it takes longer than expected:</strong> "The live web search is pulling real-time data — you can see the Tavily search engine running under the hood." Stay confident.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">3:30 – 5:30</div>
+          <div class="beat-label">Walk through the output</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"Here's what Frontier delivers. Not a list of links. Not a raw dump of data. A <strong>structured market brief</strong> — the kind you'd expect from a bulge-bracket research desk."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Map panel</strong> — "This is a live D3 choropleth. Nigeria lights up based on opportunity intensity relative to the other markets in the analysis."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Market Comparison table</strong> — "Risk scores, market size, GDP growth — ranked. Our analyst can see immediately how Nigeria stacks up."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Market Timing panel</strong> — "This is the maturity curve signal. Is the market nascent, growing, or already saturated? And critically — what's the entry verdict? STRONG BUY, HOLD, or AVOID."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>FX & Currency Risk</strong> — "For any investor deploying capital cross-border, FX is existential. This is automatically factored in."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Research Data charts</strong> — "Risk assessment, market size, GDP growth — visual and immediately readable."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Comparable Deals</strong> — "Real precedent transactions. This is what makes a brief credible in front of an investment committee."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>The written brief</strong> — scroll through it. "Executive summary, macro context, sector opportunity, exit landscape, regulatory landscape, recommendation. In 25 seconds."</div></div>
+          </div>
+          <div class="warning">
+            <div class="warning-icon">⚠</div>
+            <div class="warning-text"><strong>Don't read the brief aloud.</strong> Scroll slowly and let them scan it. The density of the output is the point.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">5:30 – 6:00</div>
+          <div class="beat-label">Show the PDF</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"One click and this becomes a <strong>branded PDF brief</strong> — ready to share with a principal, a client, or an investment committee. Our analyst doesn't spend Monday morning building this. She sends it before her first coffee."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Click <strong>Download .pdf</strong>. Let the print dialog open. Show it briefly.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Cancel the dialog — you don't need to actually print it.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SECTION 3 — DEMO QUERY 2 (Direct)
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">Live Demo — Direct Answer & Scope</div>
+        <div class="section-title-meta">INTELLIGENCE OF THE ROUTER · ~2 MIN · Shows it's not just a search engine</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="beats">
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">6:00 – 7:00</div>
+          <div class="beat-label">Show the router in action</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"Not every question needs a 25-second research pipeline. Frontier is smart enough to know the difference."</div>
+          </div>
+          <div class="query-box">
+            <div class="query-box-label">Type this query</div>
+            "What is the difference between FDI and portfolio investment?"
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Watch it come back in <strong>2–3 seconds</strong> with a clean answer — no pipeline, no charts.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Point to the <strong>green "Direct answer" badge</strong>. "Frontier classified this as a definition question. No live research needed. It answered immediately."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">"The same AI that runs the pipeline is smart enough to route simple questions directly — so you never wait unnecessarily."</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">7:00 – 7:30</div>
+          <div class="beat-label">Show scope boundaries <span style="font-weight:300;font-size:11px">(optional)</span></div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="query-box">
+            <div class="query-box-label">Type this query (optional — good for laughs)</div>
+            "What should I have for lunch today?"
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">It will politely decline and redirect to its purpose — shows the platform knows what it is and isn't.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">"This is a <strong>focused intelligence platform</strong>, not a general assistant. That's intentional — it keeps the output quality high."</div></div>
+          </div>
+          <div class="tip">
+            <div class="tip-icon">💡</div>
+            <div class="tip-text"><strong>Skip this beat</strong> if you're running short on time. It's a nice-to-have, not essential.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SECTION 4 — AGENT REASONING
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-title">Show the Reasoning Panel</div>
+        <div class="section-title-meta">UNDER THE HOOD · ~1 MIN · For technical audiences</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="beats">
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">7:30 – 8:30</div>
+          <div class="beat-label">Open the reasoning dropdown</div>
+          <div class="beat-tag live">live</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"For those who want to see under the hood — Frontier is fully transparent about its reasoning. <strong>Every brief shows the agent's intent classification, its self-critique, and the initial draft before rewriting.</strong> This isn't a black box."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Scroll down to the <strong>Agent Reasoning & Self-Critique</strong> panel and click to expand it.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Show the <strong>Intent Classification</strong> section — query type, investor type, time horizon.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">"This gives analysts and their teams full auditability — you can trace exactly how the platform interpreted the question and what logic drove the output."</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text"><strong>Skip the draft text</strong> — it's long. Just show it exists.</div></div>
+          </div>
+          <div class="tip">
+            <div class="tip-icon">💡</div>
+            <div class="tip-text"><strong>If your audience is non-technical:</strong> skip this section entirely or say "There's also a full transparency layer for teams that want auditability" and move on.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════
+       SECTION 5 — CLOSE
+  ══════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div>
+        <div class="section-title">The Close</div>
+        <div class="section-title-meta">~3 MIN · Land the message, open Q&A</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="beats">
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">8:30 – 10:00</div>
+          <div class="beat-label">What you just saw</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"What you just saw was a <strong>six-node parallel AI research pipeline</strong> — macro, political, sector, FX, exit landscape, and market timing — all running simultaneously, synthesised into a structured brief, with chart data, a PDF, and a recommendation. <strong>In under 30 seconds.</strong>"</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Pause. Let that number sit.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">"The alternative is a junior analyst spending two days pulling together fragmented reports, none of which give you a clear verdict."</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">10:00 – 11:00</div>
+          <div class="beat-label">Where this goes next</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say</div>
+            <div class="say-text">"This is a working prototype. The infrastructure is live — the pipeline is real, the data is live, the briefs are real. What we're building towards is a <strong>platform that gives any strategy team the research capacity of a bulge-bracket desk</strong> — without the headcount."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Don't oversell the roadmap — let the demo carry the weight.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">If relevant: mention multi-market comparison, sector scanning, and portfolio monitoring as the next layers.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="beat">
+        <div class="beat-left">
+          <div class="beat-time">11:00 – 12:00</div>
+          <div class="beat-label">One-line close</div>
+          <div class="beat-tag">say</div>
+        </div>
+        <div class="beat-right">
+          <div class="say-block">
+            <div class="say-label">Say to close</div>
+            <div class="say-text">"Frontier is built for the analyst who doesn't just read markets — <strong>they anticipate where they're going next.</strong> Happy to take any questions."</div>
+          </div>
+          <div class="pointers">
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">This is the tagline from the platform. Calling back to it closes the loop cleanly.</div></div>
+            <div class="pointer"><div class="pointer-bullet">→</div><div class="pointer-text">Smile. Stop talking. Open the floor.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CLOSE CARD -->
+  <div class="close-section">
+    <h2>Likely questions — and how to handle them</h2>
+    <div class="close-points">
+      <div class="close-point">
+        <div class="close-point-num">Q1</div>
+        <div class="close-point-text"><strong>"Where does the data come from?"</strong> — Live web search via Tavily (real-time), plus structured fallback data. The platform tells you when it's using live vs. fallback in every brief.</div>
+      </div>
+      <div class="close-point">
+        <div class="close-point-num">Q2</div>
+        <div class="close-point-text"><strong>"How accurate is it?"</strong> — As accurate as the best available public sources, synthesised by a model trained on institutional finance. The reasoning panel gives full auditability. Think of it as a first-pass analyst, not the final word.</div>
+      </div>
+      <div class="close-point">
+        <div class="close-point-num">Q3</div>
+        <div class="close-point-text"><strong>"Can it handle other markets?"</strong> — Yes. Any emerging market — Africa, Southeast Asia, Latin America, Middle East, South Asia. Run a query live to demonstrate.</div>
+      </div>
+      <div class="close-point">
+        <div class="close-point-num">Q4</div>
+        <div class="close-point-text"><strong>"What's the tech stack?"</strong> — Python backend with LangGraph for the agent orchestration, Google Gemini for the LLM layer, Tavily for live search, FastAPI for the API, and a vanilla JS frontend. No third-party data subscriptions required.</div>
+      </div>
+      <div class="close-point">
+        <div class="close-point-num">Q5</div>
+        <div class="close-point-text"><strong>"Is this ready to use?"</strong> — The pipeline is fully functional today. This is a working product, not a mockup. Next steps are around data sourcing depth, user authentication, and multi-user workspaces.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Frontier Intelligence · AskMarketIQ</span>
+    <span>René Bossa &amp; Marili Kammenou · Confidential</span>
+  </div>
+
+</div>
+</body>
+</html>

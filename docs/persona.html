@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontier — User Persona</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:      #0e0e0e;
+  --ink2:     #2a2a2a;
+  --ink3:     rgba(14,14,14,0.45);
+  --paper:    #f5f2ec;
+  --paper2:   #ede9e0;
+  --paper3:   #e4dfd4;
+  --gold:     #b8955a;
+  --gold-dim: rgba(184,149,90,0.15);
+  --gold-line:rgba(184,149,90,0.3);
+  --red:      #c0392b;
+  --green:    #1a6b3a;
+  --rule:     rgba(14,14,14,0.12);
+  --sans:     'Libre Franklin', sans-serif;
+  --serif:    'Playfair Display', Georgia, serif;
+  --mono:     'DM Mono', monospace;
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.6;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  border-bottom: 3px double var(--rule);
+  padding: 18px 60px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.masthead-brand {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ink2);
+}
+.masthead-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  margin: 0 24px;
+}
+.masthead-date {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  letter-spacing: 1px;
+}
+
+/* ── KICKER ── */
+.kicker-row {
+  padding: 32px 60px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  animation: fade-up 0.5s ease 0.1s both;
+}
+.kicker-line {
+  width: 32px;
+  height: 2px;
+  background: var(--gold);
+}
+.kicker-text {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ── HERO SECTION ── */
+.hero {
+  padding: 20px 60px 0;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 48px;
+  align-items: start;
+}
+
+.hero-left {}
+
+.headline {
+  font-family: var(--serif);
+  font-size: clamp(42px, 5vw, 68px);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -1px;
+  color: var(--ink);
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.2s both;
+}
+.headline em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.deck {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--ink2);
+  line-height: 1.6;
+  max-width: 560px;
+  margin-bottom: 28px;
+  border-left: 3px solid var(--gold);
+  padding-left: 18px;
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.3s both;
+}
+
+/* ── TAGLINE STAMP ── */
+.tagline-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.4s both;
+}
+.tagline-stamp::before {
+  content: '◆';
+  font-size: 8px;
+  color: var(--gold);
+}
+
+/* ── PROFILE CARD ── */
+.profile-card {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--gold);
+  padding: 28px;
+  position: sticky;
+  top: 20px;
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.35s both;
+}
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  background: var(--ink);
+  border-radius: 0;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.profile-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(184,149,90,0.3) 0%, transparent 60%);
+}
+.profile-avatar svg { width: 32px; height: 32px; }
+.profile-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.profile-title {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink3);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.profile-divider { height: 1px; background: var(--rule); margin: 16px 0; }
+.profile-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.profile-stat:last-of-type { border-bottom: none; }
+.profile-stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.profile-stat-value {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  text-align: right;
+  max-width: 180px;
+}
+
+/* ── DIVIDER RULE ── */
+.section-rule {
+  margin: 40px 60px 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  animation: fade-up 0.5s ease 0.5s both;
+}
+.section-rule-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.section-rule-line { height: 1px; background: var(--rule); }
+
+/* ── BODY GRID ── */
+.body-grid {
+  padding: 28px 60px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--rule);
+  margin: 0 60px;
+  background: var(--rule);
+}
+.body-col {
+  background: var(--paper);
+  padding: 28px 24px;
+  opacity: 0;
+  animation: fade-up 0.6s ease var(--delay, 0.5s) both;
+}
+.body-col-head {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gold-line);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.body-col-head-num {
+  width: 18px;
+  height: 18px;
+  background: var(--gold);
+  color: var(--paper);
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.body-col p {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+.body-col p:last-child { margin-bottom: 0; }
+.body-col strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ── PAIN POINTS ── */
+.pain-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.pain-item:last-child { border-bottom: none; }
+.pain-bullet {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.pain-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.7;
+}
+
+/* ── OUTCOMES ── */
+.outcome-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.outcome-item:last-child { border-bottom: none; }
+.outcome-bullet {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.outcome-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink2);
+  line-height: 1.7;
+}
+
+/* ── PLATFORM FIT SECTION ── */
+.fit-section {
+  margin: 28px 60px 0;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 36px 40px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 40px;
+  align-items: start;
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.7s both;
+}
+.fit-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.fit-heading {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--paper);
+}
+.fit-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.fit-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.fit-item:last-child { border-bottom: none; }
+.fit-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.fit-icon svg { width: 13px; height: 13px; color: var(--gold); }
+.fit-item-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--paper);
+  margin-bottom: 3px;
+}
+.fit-item-text span {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(245,242,236,0.55);
+  line-height: 1.65;
+}
+
+/* ── QUOTE ── */
+.quote-section {
+  margin: 28px 60px 0;
+  padding: 36px 40px;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--gold);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: center;
+  background: var(--gold-dim);
+  opacity: 0;
+  animation: fade-up 0.6s ease 0.8s both;
+}
+.quote-mark {
+  font-family: var(--serif);
+  font-size: 72px;
+  color: var(--gold);
+  line-height: 0.7;
+  align-self: flex-start;
+  padding-top: 8px;
+  opacity: 0.6;
+}
+.quote-text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.quote-attr {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  margin: 40px 60px 0;
+  padding: 18px 0 40px;
+  border-top: 3px double var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  animation: fade-up 0.5s ease 0.9s both;
+}
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.footer-tagline {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  letter-spacing: 0.5px;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-brand">Frontier Intelligence</div>
+  <div class="masthead-rule"></div>
+  <div class="masthead-date">User Persona · Strategic Intelligence</div>
+</header>
+
+<!-- KICKER -->
+<div class="kicker-row">
+  <div class="kicker-line"></div>
+  <div class="kicker-text">The Frontier User</div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <h1 class="headline">The analyst who doesn't<br>just read the map — <em>draws it.</em></h1>
+    <p class="deck">Senior analysts and strategy leads who sit at the intersection of markets, technology, and growth. They don't react to the world — they anticipate where it's going next.</p>
+    <div class="tagline-stamp">Designed for people who anticipate markets — not just analyse them</div>
+  </div>
+
+  <!-- PROFILE CARD -->
+  <div class="profile-card">
+    <div class="profile-avatar">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="12" r="6" stroke="rgba(184,149,90,0.8)" stroke-width="1.5"/>
+        <path d="M4 28c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="rgba(184,149,90,0.8)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="profile-name">Strategic Market Analyst</div>
+    <div class="profile-title">Senior Analyst or Strategy Lead<br>Bank · Investment Firm · Consulting · Enterprise</div>
+
+    <div class="profile-divider"></div>
+
+    <div class="profile-stat">
+      <span class="profile-stat-label">Seniority</span>
+      <span class="profile-stat-value">Senior / Principal</span>
+    </div>
+    <div class="profile-stat">
+      <span class="profile-stat-label">Context</span>
+      <span class="profile-stat-value">Markets, Tech & Growth Strategy</span>
+    </div>
+    <div class="profile-stat">
+      <span class="profile-stat-label">Core need</span>
+      <span class="profile-stat-value">Synthesis, not just data</span>
+    </div>
+    <div class="profile-stat">
+      <span class="profile-stat-label">Time horizon</span>
+      <span class="profile-stat-value">Forward-looking</span>
+    </div>
+    <div class="profile-stat">
+      <span class="profile-stat-label">Decision type</span>
+      <span class="profile-stat-value">Strategic & Investment</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION RULE -->
+<div class="section-rule">
+  <div class="section-rule-label">Profile breakdown</div>
+  <div class="section-rule-line"></div>
+  <div class="section-rule-label">§ I</div>
+</div>
+
+<!-- BODY GRID -->
+<div class="body-grid" style="margin-top:0">
+
+  <!-- GOALS -->
+  <div class="body-col" style="--delay:0.5s">
+    <div class="body-col-head">
+      <div class="body-col-head-num">01</div>
+      Goals
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">→</div>
+      <div class="outcome-text"><strong>Identify emerging opportunities</strong> before competitors do — in markets, sectors, and geographies that aren't yet consensus</div>
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">→</div>
+      <div class="outcome-text"><strong>Understand macro and sector trends</strong> quickly and clearly, without wading through fragmented reports</div>
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">→</div>
+      <div class="outcome-text"><strong>Support leadership</strong> with forward-looking insight — not historical summaries, but directional intelligence that drives decisions</div>
+    </div>
+  </div>
+
+  <!-- PAIN POINTS -->
+  <div class="body-col" style="--delay:0.6s">
+    <div class="body-col-head">
+      <div class="body-col-head-num">02</div>
+      Pain Points
+    </div>
+    <div class="pain-item">
+      <div class="pain-bullet"></div>
+      <div class="pain-text"><strong>Information is fragmented</strong> — reports, news feeds, data tools, broker notes. High volume, low synthesis.</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-bullet"></div>
+      <div class="pain-text"><strong>Too much noise.</strong> Not enough direction. They spend hours filtering to find the signal.</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-bullet"></div>
+      <div class="pain-text"><strong>Traditional tools look backwards.</strong> They tell you what happened — not where things are heading next.</div>
+    </div>
+    <div class="pain-item">
+      <div class="pain-bullet"></div>
+      <div class="pain-text"><strong>Manual briefing cycles</strong> mean slow turnaround. By the time an analysis is ready, the window may have moved.</div>
+    </div>
+  </div>
+
+  <!-- OUTCOMES -->
+  <div class="body-col" style="--delay:0.7s">
+    <div class="body-col-head">
+      <div class="body-col-head-num">03</div>
+      With Frontier, they can
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">✓</div>
+      <div class="outcome-text"><strong>Spot early signals of change</strong> — macro shifts, sector pivots, regulatory moves — before they become consensus</div>
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">✓</div>
+      <div class="outcome-text"><strong>Prioritise markets and sectors</strong> with the highest forward-looking potential, backed by structured AI reasoning</div>
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">✓</div>
+      <div class="outcome-text"><strong>Make faster, more confident decisions</strong> — with a clear brief in minutes rather than days</div>
+    </div>
+    <div class="outcome-item">
+      <div class="outcome-bullet">✓</div>
+      <div class="outcome-text"><strong>Brief leadership credibly</strong> — shareable, structured PDF output ready for the boardroom</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORM FIT SECTION -->
+<div class="fit-section">
+  <div>
+    <div class="fit-label">Why Frontier fits</div>
+    <div class="fit-heading">Horizon scanning, by design</div>
+  </div>
+  <div class="fit-items">
+    <div class="fit-item">
+      <div class="fit-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <circle cx="7" cy="7" r="5.5"/><path d="M7 4v3l2 1.5"/>
+        </svg>
+      </div>
+      <div class="fit-item-text">
+        <strong>Live signals in one place</strong>
+        <span>Market conditions, macro indicators, sector shifts — pulled in real time and presented as a unified picture, not a list of links.</span>
+      </div>
+    </div>
+    <div class="fit-item">
+      <div class="fit-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M2 10L5 6l2.5 2.5L10 4l2 2"/>
+        </svg>
+      </div>
+      <div class="fit-item-text">
+        <strong>AI-driven pattern reasoning</strong>
+        <span>The platform doesn't just surface data — it connects patterns across macro, political, sector, and FX signals to produce directional conclusions.</span>
+      </div>
+    </div>
+    <div class="fit-item">
+      <div class="fit-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <rect x="2" y="2" width="10" height="10" rx="1.5"/><path d="M5 7h4M5 5h2"/>
+        </svg>
+      </div>
+      <div class="fit-item-text">
+        <strong>Structured intelligence, not raw information</strong>
+        <span>Every analysis returns a brief with clear sections, a market verdict, risk table, timing signal, and FX context — ready to act on or share.</span>
+      </div>
+    </div>
+    <div class="fit-item">
+      <div class="fit-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+          <path d="M7 2v10M2 7l5-5 5 5"/>
+        </svg>
+      </div>
+      <div class="fit-item-text">
+        <strong>Forward-looking by default</strong>
+        <span>Self-reflection and critique is built into the pipeline — each brief is reviewed before delivery, so outputs reflect considered judgement, not just retrieval.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-section">
+  <div class="quote-mark">"</div>
+  <div>
+    <p class="quote-text">By the time a market is in the headlines, you've already missed the entry. Frontier is for the analyst who needs to be three steps ahead — not catching up to where everyone else already is.</p>
+    <div class="quote-attr">Strategic Market Analyst · Frontier Intelligence</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-brand">Frontier · AskMarketIQ</div>
+  <div class="footer-tagline">Emerging Markets Intelligence Platform · René Bossa &amp; Marili Kammenou</div>
+</footer>
+
+</body>
+</html>
